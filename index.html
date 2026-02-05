@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Job Application Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Job Application Tracker</h1>
+        <p>Track your job applications and follow-ups</p>
+    </header>
+
+    <main>
+        <!-- Jobs List Section -->
+        <section id="jobs-section" class="jobs-section">
+            <h2>Your Job Applications</h2>
+            <div class="jobs-controls">
+                <p id="job-count">Total Applications: 0</p>
+                <div class="sort-controls">
+                    <label for="sort-select">Sort by:</label>
+                    <select id="sort-select" onchange="handleSortChange()">
+                        <option value="likelihood">Likelihood (Highest First)</option>
+                        <option value="date">Date Applied (Newest First)</option>
+                        <option value="status">Application Status</option>
+                    </select>
+                </div>
+                <button id="clear-all-btn" class="btn btn-danger">Clear All</button>
+            </div>
+            <div id="jobs-container" class="jobs-container">
+                <p class="empty-message">No job applications yet. Add one to get started!</p>
+            </div>
+        </section>
+
+        <!-- Add Job Form Section -->
+        <section id="add-job-section" class="form-section">
+            <h2>Add New Job Application</h2>
+            <form id="job-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="job-name">Company Name *</label>
+                        <input type="text" id="job-name" name="jobName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="position">Position *</label>
+                        <input type="text" id="position" name="position" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pay">Pay (if listed)</label>
+                        <input type="text" id="pay" name="pay" placeholder="e.g., $60k-$80k">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location / Remote *</label>
+                        <input type="text" id="location" name="location" placeholder="e.g., New York, NY / Remote" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date-applied">Date Applied *</label>
+                        <input type="date" id="date-applied" name="dateApplied" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-name">Contact Name</label>
+                        <input type="text" id="contact-name" name="contactName" placeholder="e.g., John Doe">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="additional-contacts">Additional Contact Names</label>
+                        <textarea id="additional-contacts" name="additionalContacts" rows="2" placeholder="Add additional contact names, one per line"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="source">Source *</label>
+                        <input type="text" id="source" name="source" placeholder="e.g., LinkedIn, Indeed, Company Website" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status *</label>
+                        <select id="status" name="status" required>
+                            <option value="">Select a status</option>
+                            <option value="Applied">Applied</option>
+                            <option value="Recruiter">Recruiter Contact</option>
+                            <option value="Interview">Interview</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="job-url">Website / Application URL</label>
+                        <input type="url" id="job-url" name="jobUrl" placeholder="https://company.com/apply/123">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="follow-up-date">Follow Up Date</label>
+                        <input type="date" id="follow-up-date" name="followUpDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="likelihood-rating">Likelihood Rating (1-5 stars)</label>
+                        <div class="rating-input" id="add-rating-input">
+                            <input type="hidden" id="likelihood-rating" name="likelihoodRating" value="0">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" name="notes" rows="4" placeholder="Add any additional notes..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Job Application</button>
+                    <button type="reset" class="btn btn-secondary">Clear Form</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Job Application Tracker. All rights reserved.</p>
+    </footer>
+
+    <!-- Edit Job Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Job Application</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-form">
+                    <div class="form-group">
+                        <label for="edit-status">Status *</label>
+                        <select id="edit-status" name="status" required>
+                            <option value="">Select a status</option>
+                            <option value="Applied">Applied</option>
+                            <option value="Recruiter">Recruiter Contact</option>
+                            <option value="Interview">Interview</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-likelihood">Likelihood Rating (1-5 stars)</label>
+                        <div class="rating-input" id="edit-rating-input">
+                            <input type="hidden" id="edit-likelihood" name="likelihoodRating" value="0">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-contact-name">Primary Contact Name</label>
+                            <input type="text" id="edit-contact-name" name="contactName" placeholder="e.g., John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-additional-contacts">Additional Contact Names</label>
+                            <textarea id="edit-additional-contacts" name="additionalContacts" rows="2" placeholder="One contact name per line"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-url">Website / Application URL</label>
+                        <input type="url" id="edit-url" name="jobUrl" placeholder="https://company.com/apply/123">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-phone">Contact Phone</label>
+                        <input type="tel" id="edit-phone" name="contactPhone" placeholder="e.g., +1-555-555-5555">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-notes">Notes</label>
+                        <textarea id="edit-notes" name="notes" rows="4" placeholder="Add any additional notes..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditedJob()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
