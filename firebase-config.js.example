@@ -1,0 +1,14 @@
+// Copy this file to firebase-config.js and replace with your project's config.
+// Example:
+// window.firebaseConfig = {
+//   apiKey: "YOUR_API_KEY",
+//   authDomain: "your-project.firebaseapp.com",
+//   projectId: "your-project-id",
+//   storageBucket: "your-project.appspot.com",
+//   messagingSenderId: "...",
+//   appId: "..."
+// };
+
+window.firebaseConfig = {
+  // Add your Firebase config here when ready.
+};

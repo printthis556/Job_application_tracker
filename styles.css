@@ -39,6 +39,93 @@ header p {
     color: #d0d5dd;
 }
 
+/* Header layout for user actions */
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Constrain header content and add horizontal padding so the title
+   doesn't touch the viewport edge. Matches main's max-width/padding. */
+.header-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Ensure the left brand block aligns text to the left when using flex */
+.header-inner > div:first-child {
+    text-align: left;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    padding: 0.25rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(75, 85, 99, 0.12);
+}
+
+.user-email {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    background: rgba(99, 102, 241, 0.12);
+    color: #eef2ff;
+    font-weight: 700;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    letter-spacing: 0.2px;
+    opacity: 1;
+}
+
+/* Make buttons in the header-actions more compact and theme-consistent */
+.header-actions .btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.92rem;
+    border-radius: 6px;
+}
+
+.header-actions .btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: #d0d5dd;
+}
+
+.header-actions .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Stronger visual for the logged-in email */
+.user-email {
+    background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+    color: #ffffff;
+    padding: 0.45rem 0.8rem;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 1rem;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.12);
+    border: 1px solid rgba(124, 58, 237, 0.18);
+}
+
+/* Make the sign-out button more visible and themed as an action */
+#signout-btn {
+    background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
+    color: #fff;
+    border: none;
+    padding: 0.45rem 0.9rem;
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.18);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+#signout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(239, 68, 68, 0.22);
+    opacity: 0.98;
+}
+
 /* Main Content Styles */
 main {
     max-width: 1000px;
@@ -79,7 +166,6 @@ section h2 {
 .form-row .form-group.full-width {
     grid-column: 1 / -1;
 }
-
 .form-group {
     display: flex;
     flex-direction: column;
@@ -413,6 +499,52 @@ section h2 {
         opacity: 1;
     }
 }
+
+/* Login screen styles */
+.login-screen {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,0.95));
+    z-index: 2000;
+}
+
+.login-box {
+    background-color: #0b1220;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+    border: 1px solid #22303f;
+}
+
+.login-box h2 {
+    color: #e5e7eb;
+    margin-bottom: 1rem;
+}
+
+.login-box label {
+    color: #9aa4b2;
+    display: block;
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.login-box input[type="email"], .login-box input[type="password"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #2b3b4a;
+    background: #071228;
+    color: #d0d5dd;
+}
+
+.login-row { margin-top: 0.5rem; }
+.checkbox-label { color: #cbd5e1; font-weight: 500; }
+.login-note { color: #9aa4b2; margin-top: 0.75rem; font-size: 0.9rem; }
 
 /* Footer Styles */
 footer {

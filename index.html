@@ -8,9 +8,69 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-box">
+            <h2>Sign in</h2>
+            <form id="login-form">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" name="email" required>
+
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" name="password" required>
+
+                <div class="login-row">
+                    <label class="checkbox-label"><input type="checkbox" id="show-password"> Show password</label>
+                </div>
+
+                <div class="login-row">
+                    <label class="checkbox-label"><input type="checkbox" id="stay-logged-in"> Stay logged in</label>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Sign in</button>
+                    <button type="button" id="register-btn" class="btn btn-secondary">Create account</button>
+                </div>
+                <p class="login-note">This demo stores accounts locally. To sync across devices, see README for backend setup.</p>
+            </form>
+
+            <!-- Registration form; hidden by default and shown when "Create account" is clicked -->
+            <form id="register-form" style="display:none; margin-top: 1rem;">
+                <h2>Create account</h2>
+                <label for="register-name">Full Name (optional)</label>
+                <input type="text" id="register-name" name="fullName" placeholder="e.g., Jane Doe">
+                <label for="register-email">Email</label>
+                <input type="email" id="register-email" name="email" required>
+
+                <label for="register-password">Password</label>
+                <input type="password" id="register-password" name="password" required>
+
+                <label for="register-confirm">Confirm Password</label>
+                <input type="password" id="register-confirm" name="confirmPassword" required>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create account</button>
+                    <button type="button" id="register-cancel" class="btn btn-secondary">Cancel</button>
+                </div>
+                <p class="login-note">Your account will be stored locally for this demo unless you configure Firebase.</p>
+            </form>
+        </div>
+    </div>
+
+    <div id="app-content">
     <header>
-        <h1>Job Application Tracker</h1>
-        <p>Track your job applications and follow-ups</p>
+        <div class="header-inner">
+            <div>
+                <h1>Job Application Tracker</h1>
+                <p>Track your job applications and follow-ups</p>
+                <p id="user-greeting" class="user-greeting" style="display:none; margin-top:0.5rem;"></p>
+            </div>
+            <div class="header-actions">
+                <span id="user-email-display" class="user-email"></span>
+                <button id="edit-name-btn" class="btn btn-small btn-secondary" style="display:none;">Edit</button>
+                <button id="signout-btn" class="btn btn-secondary" style="display:none;">Sign out</button>
+            </div>
+        </div>
     </header>
 
     <main>
@@ -204,6 +264,12 @@
             </div>
         </div>
     </div>
+
+    <!-- Firebase SDKs (optional). To enable, create a firebase-config.js with your config. -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
 
     <script src="script.js"></script>
 </body>
