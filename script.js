@@ -57,11 +57,32 @@ function initFirebaseIfConfigured() {
             if (!firebase.apps || firebase.apps.length === 0) {
                 firebase.initializeApp(window.firebaseConfig);
             }
-            firestoreDb = firebase.firestore();
+            // Initialize auth immediately (we can use it even if Firestore isn't set up)
             firebaseAuth = firebase.auth();
-            firebaseEnabled = true;
 
-            // Listen to auth state changes
+            // Defer enabling Firestore until we verify the project has a database.
+            // If the quick check fails, we fall back to localStorage-only mode to
+            // avoid repeated "database does not exist" errors in the console.
+            try {
+                firestoreDb = firebase.firestore();
+                // Lightweight availability check: try to read a small query. If the
+                // project's Firestore/Datastore isn't configured this will fail and
+                // we'll remain in local-only mode.
+                firestoreDb.collection('__init_check__').limit(1).get()
+                    .then(() => {
+                        firebaseEnabled = true;
+                        console.info('Firestore available: using cloud storage.');
+                    })
+                    .catch(err => {
+                        console.warn('Firestore not available; falling back to local storage.', err);
+                        firebaseEnabled = false;
+                    });
+            } catch (e) {
+                console.warn('Firestore initialization failed; falling back to local storage.', e);
+                firebaseEnabled = false;
+            }
+
+            // Listen to auth state changes (we still handle auth even when Firestore is unavailable)
             firebaseAuth.onAuthStateChanged(user => {
                 if (user) {
                     // prefer Firebase displayName if available
@@ -336,6 +357,11 @@ function init() {
     // Try to initialize Firebase (if firebase-config.js exists and SDKs loaded)
     initFirebaseIfConfigured();
 
+    // Always wire up the app event listeners and rating stars so the add-job
+    // form works even if the user isn't signed in (local demo use-case).
+    setupEventListeners();
+    setupRatingStars();
+
     const user = getCurrentUser();
     if (user && (user.email || user.name)) {
         const displayEl = document.getElementById('user-email-display');
@@ -348,8 +374,6 @@ function init() {
         document.getElementById('signout-btn').style.display = 'inline-block';
         const editBtn = document.getElementById('edit-name-btn'); if (editBtn) editBtn.style.display = 'inline-block';
         showApp();
-        setupEventListeners();
-        setupRatingStars();
         loadJobs();
     } else {
         showLogin();
@@ -375,6 +399,16 @@ function setupEventListeners() {
     if (clearAllBtn) {
         clearAllBtn.addEventListener('click', handleClearAll);
     }
+
+    // Modal buttons (wired via JS to avoid inline handlers)
+    const modalClose = document.getElementById('modal-close-btn');
+    if (modalClose) modalClose.addEventListener('click', closeEditModal);
+
+    const modalCancel = document.getElementById('modal-cancel-btn');
+    if (modalCancel) modalCancel.addEventListener('click', closeEditModal);
+
+    const modalSave = document.getElementById('modal-save-btn');
+    if (modalSave) modalSave.addEventListener('click', saveEditedJob);
 }
 
 // Handle adding a new job
@@ -613,8 +647,8 @@ function createJobCard(job) {
             </div>
             <div class="job-actions">
                 <span class="status-badge ${statusClass}">${job.status}</span>
-                <button class="btn btn-primary btn-small" onclick="openEditModal(${job.id})">Edit</button>
-                <button class="btn btn-danger btn-small" onclick="handleDeleteJob(${job.id})">Delete</button>
+                <button class="btn btn-primary btn-small edit-btn" data-job-id="${job.id}">Edit</button>
+                <button class="btn btn-danger btn-small delete-btn" data-job-id="${job.id}">Delete</button>
             </div>
         </div>
         
@@ -659,6 +693,21 @@ function createJobCard(job) {
         ` : ''}
     `;
     
+    // Attach event listeners instead of using inline handlers (CSP-safe)
+    const editBtn = card.querySelector('.edit-btn');
+    if (editBtn) {
+        editBtn.addEventListener('click', function() {
+            openEditModal(job.id);
+        });
+    }
+
+    const deleteBtn = card.querySelector('.delete-btn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function() {
+            handleDeleteJob(job.id);
+        });
+    }
+
     return card;
 }
 

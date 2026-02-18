@@ -202,9 +202,9 @@
     <!-- Edit Job Modal -->
     <div id="edit-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
+                <div class="modal-header">
                 <h2>Edit Job Application</h2>
-                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+                <button class="modal-close" id="modal-close-btn">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="edit-form">
@@ -259,8 +259,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveEditedJob()">Save Changes</button>
+                <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="modal-save-btn">Save Changes</button>
             </div>
         </div>
     </div>
