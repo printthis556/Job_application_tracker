@@ -50,6 +50,8 @@ function storageKeyForJobs() {
 let firebaseEnabled = false;
 let firestoreDb = null;
 let firebaseAuth = null;
+// When true, suppress automatic anonymous sign-in (used when user explicitly signs out)
+let firebaseSuppressAutoAnon = false;
 
 function initFirebaseIfConfigured() {
     try {
@@ -85,7 +87,25 @@ function initFirebaseIfConfigured() {
             // Listen to auth state changes (we still handle auth even when Firestore is unavailable)
             firebaseAuth.onAuthStateChanged(user => {
                 if (user) {
-                    // prefer Firebase displayName if available
+                    // If the user is anonymous, treat as a guest account so we can
+                    // persist data to Firestore without requiring manual sign-in.
+                    if (user.isAnonymous) {
+                        const name = 'Guest';
+                        saveUser({ email: null, uid: user.uid, name }, true);
+                        const displayEl = document.getElementById('user-email-display');
+                        if (displayEl) {
+                            displayEl.textContent = name;
+                            displayEl.title = '';
+                        }
+                        const greet = document.getElementById('user-greeting'); if (greet) { greet.textContent = `Welcome, ${name}`; greet.style.display = 'block'; }
+                        document.getElementById('signout-btn').style.display = 'inline-block';
+                        const editBtn = document.getElementById('edit-name-btn'); if (editBtn) editBtn.style.display = 'inline-block';
+                        showApp();
+                        loadJobs();
+                        return;
+                    }
+
+                    // prefer Firebase displayName if available for non-anonymous users
                     const name = user.displayName || deriveNameFromEmail(user.email);
                     saveUser({ email: user.email, uid: user.uid, name }, true);
                     const displayEl = document.getElementById('user-email-display');
@@ -99,8 +119,24 @@ function initFirebaseIfConfigured() {
                     showApp();
                     loadJobs();
                 } else {
-                    clearUser();
-                    showLogin();
+                    // If we recently signed out explicitly, don't immediately re-create
+                    // an anonymous session — instead show the login UI.
+                    if (firebaseSuppressAutoAnon) {
+                        firebaseSuppressAutoAnon = false;
+                        clearUser();
+                        showLogin();
+                        return;
+                    }
+
+                    // Otherwise attempt an anonymous sign-in so data can still be
+                    // persisted to Firestore even without explicit login. If anonymous
+                    // auth fails or is disabled, fall back to localStorage and show
+                    // the login screen.
+                    firebaseAuth.signInAnonymously().catch(err => {
+                        console.warn('Anonymous sign-in failed or disabled; showing login.', err);
+                        clearUser();
+                        showLogin();
+                    });
                 }
             });
         }
@@ -255,6 +291,8 @@ function handleRegisterSubmit(event) {
 
 function handleSignOut() {
     if (firebaseEnabled && firebaseAuth) {
+        // When signing out explicitly, suppress automatic anonymous re-signin.
+        firebaseSuppressAutoAnon = true;
         firebaseAuth.signOut().then(() => {
             clearUser();
             document.getElementById('user-email-display').textContent = '';
