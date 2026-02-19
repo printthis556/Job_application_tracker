@@ -901,7 +901,17 @@ function openEditModal(jobId) {
                     return;
                 }
 
-                document.getElementById('edit-status').value = job.status;
+                const editStatusEl = document.getElementById('edit-status');
+                if (editStatusEl) {
+                    // Prefer exact value match; fall back to matching option text (legacy data might store label)
+                    const hasValue = Array.from(editStatusEl.options).some(opt => opt.value === job.status);
+                    if (hasValue) {
+                        editStatusEl.value = job.status;
+                    } else {
+                        const match = Array.from(editStatusEl.options).find(opt => opt.textContent.trim() === job.status);
+                        editStatusEl.value = match ? match.value : '';
+                    }
+                }
                 document.getElementById('edit-notes').value = job.notes === 'No notes' ? '' : job.notes;
                 document.getElementById('edit-likelihood').value = job.likelihoodRating || 0;
                 document.getElementById('edit-url').value = job.jobUrl || '';
@@ -929,7 +939,16 @@ function openEditModal(jobId) {
         }
 
         // Populate modal fields
-        document.getElementById('edit-status').value = job.status;
+        const editStatusElLocal = document.getElementById('edit-status');
+        if (editStatusElLocal) {
+            const hasValue = Array.from(editStatusElLocal.options).some(opt => opt.value === job.status);
+            if (hasValue) {
+                editStatusElLocal.value = job.status;
+            } else {
+                const match = Array.from(editStatusElLocal.options).find(opt => opt.textContent.trim() === job.status);
+                editStatusElLocal.value = match ? match.value : '';
+            }
+        }
         document.getElementById('edit-notes').value = job.notes === 'No notes' ? '' : job.notes;
         document.getElementById('edit-likelihood').value = job.likelihoodRating || 0;
         document.getElementById('edit-url').value = job.jobUrl || '';
